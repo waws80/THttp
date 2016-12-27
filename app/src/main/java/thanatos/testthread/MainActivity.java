@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //兼容5.0以下使用https和使用证书访问https
-//        mThttp=THttp.register(this,R.raw.qgar);
+        mThttp=THttp.register(this,R.raw.qgar);
         //访问http或5.0以上访问https
         mThttp=THttp.register(this);
         for (int i = 0; i < 1; i++) {
