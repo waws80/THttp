@@ -78,13 +78,11 @@ public class THttp {
      */
     public  THttp addRequest(final Request request){
                requestSet.add(request);
+        if (queue==null)
+            queue=new Queue(requestSet);
         return this;
     }
 
-    public void start(){
-        if (queue==null)
-            queue=new Queue(requestSet);
-    }
 
     public void cancleAll(){
         requestSet.clear();

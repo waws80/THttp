@@ -48,10 +48,7 @@ public class RequestImp implements ResultModel {
      * @param listener      请求数据的回调
      */
     public RequestImp(HttpConn mHttpConn, HttpConn.Method method, String url, JSONObject jsonObject, Map<String,String>
-            map,
-                      int ids,
-                      OnListener
-            listener) {
+            map,int ids, OnListener listener) {
         this.mHttpConn = mHttpConn;
         listeners=listener;
         getResult(method,url,jsonObject,map,ids);
@@ -60,12 +57,7 @@ public class RequestImp implements ResultModel {
     /**
      * 获取到轮询队列返回到主线程的数据，并通过回调事件进行回调。
      */
-    private  class THttpHandler extends Handler{
-        private Finish finish;
-
-        public THttpHandler(Finish finish){
-            this.finish=finish;
-        }
+    private  static class THttpHandler extends Handler{
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -104,7 +96,7 @@ public class RequestImp implements ResultModel {
                 try {
                     semaphore.acquire();
                     Looper.prepare();
-                    mHandler=new THttpHandler(finish);
+                    mHandler=new THttpHandler();
                     String result = mHttpConn.getResult(method, url,jsonObject,map,ids);
                     UrlOption option=new UrlOption();
                     option.mUrl=url;
@@ -123,15 +115,5 @@ public class RequestImp implements ResultModel {
         executorService.shutdown();
     }
 
-    private Finish finish;
-    public void Isuccess(Finish finish){
-        this.finish=finish;
-
-    }
-
-
-   interface Finish{
-       void success(String res);
-   }
 
 }
