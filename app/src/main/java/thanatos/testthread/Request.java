@@ -11,7 +11,7 @@ import java.util.Map;
 
 public  abstract class Request {
 
-    public abstract void request();
+    public abstract RequestImp request();
 
     /**
      * 添加请求头
@@ -20,4 +20,6 @@ public  abstract class Request {
     public Map<String, String> getHeader() {
         return Collections.emptyMap();
     }
+
+
 }

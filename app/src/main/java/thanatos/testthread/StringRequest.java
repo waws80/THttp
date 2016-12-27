@@ -16,8 +16,6 @@ import java.util.Map;
 
 public class StringRequest  extends Request{
 
-
-    private RequestImp requestImp;
     private HttpConn.Method method;
     private String url;
     private ResultModel.OnListener listener;
@@ -31,13 +29,11 @@ public class StringRequest  extends Request{
         this.url=url;
         this.listener=listener;
         this.jsonObject=jsonObject;
-        request();
 
     }
     @Override
-    public void request(){
-        if (requestImp==null)
-        requestImp=new RequestImp(new HttpConn(THttp.getContext()),jsonObject==null? HttpConn.Method.GET:method,url,
+    public RequestImp request(){
+        return new RequestImp(new HttpConn(THttp.getContext()),jsonObject==null? HttpConn.Method.GET:method,url,
                 jsonObject,getHeader(),THttp
                 .cerId,listener);
     }

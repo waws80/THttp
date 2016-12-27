@@ -30,9 +30,9 @@ public class RequestImp implements ResultModel {
     //主线程handler
     private THttpHandler mHandler=null;
     //信号量来控制每次进入线程池的数量
-    private Semaphore semaphore=new Semaphore(5);
+    private Semaphore semaphore=new Semaphore(1);
     //线程池的最大数量
-    private ExecutorService executorService=Executors.newFixedThreadPool(5);
+    private ExecutorService executorService=Executors.newFixedThreadPool(1);
     //请求数据的回调
     private static OnListener listeners;
 
@@ -60,14 +60,19 @@ public class RequestImp implements ResultModel {
     /**
      * 获取到轮询队列返回到主线程的数据，并通过回调事件进行回调。
      */
-    private static class THttpHandler extends Handler{
+    private  class THttpHandler extends Handler{
+        private Finish finish;
+
+        public THttpHandler(Finish finish){
+            this.finish=finish;
+        }
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             UrlOption option= (UrlOption) msg.obj;
             if (option.mUrl.equals(option.url.getTag())){
                 if (option.result==null){
-                    listeners.Error(""+THttpError.mErrorCode);
+
                 }else {
                     if (option.result.contains(",")){
                         String[] split = option.result.split(",");
@@ -91,9 +96,7 @@ public class RequestImp implements ResultModel {
      */
 
     public void getResult(final HttpConn.Method method, final String url, final JSONObject jsonObject, final
-    Map<String,String> map,
-                          final int
-            ids) {
+    Map<String,String> map,final int ids) {
 
         executorService.execute(new Runnable() {
             @Override
@@ -101,7 +104,7 @@ public class RequestImp implements ResultModel {
                 try {
                     semaphore.acquire();
                     Looper.prepare();
-                    mHandler=new THttpHandler();
+                    mHandler=new THttpHandler(finish);
                     String result = mHttpConn.getResult(method, url,jsonObject,map,ids);
                     UrlOption option=new UrlOption();
                     option.mUrl=url;
@@ -119,5 +122,16 @@ public class RequestImp implements ResultModel {
         });
         executorService.shutdown();
     }
+
+    private Finish finish;
+    public void Isuccess(Finish finish){
+        this.finish=finish;
+
+    }
+
+
+   interface Finish{
+       void success(String res);
+   }
 
 }

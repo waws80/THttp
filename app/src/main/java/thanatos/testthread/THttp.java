@@ -1,8 +1,11 @@
 package thanatos.testthread;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,9 +17,15 @@ import java.util.concurrent.Executors;
  */
 
 public class THttp {
+
+    private static final String TAG = "THttp";
     private static WeakReference<Context> reference=null;
 
-    public static int cerId=Integer.MAX_VALUE;
+    public  static int cerId=Integer.MAX_VALUE;
+
+    private  static Set<Request> requestSet=new HashSet<>();
+
+    private Queue queue;
 
     private THttp() {
     }
@@ -26,7 +35,7 @@ public class THttp {
      * @param context
      * @return
      */
-    public static THttp register(Context context){
+    public  static THttp register(Context context){
         reference=new WeakReference<>(context);
         return  THttpHolder.T_HTTP;
     }
@@ -37,7 +46,7 @@ public class THttp {
      * @param cerid
      * @return
      */
-    public static THttp register(Context context,int cerid){
+    public  static THttp register(Context context,int cerid){
         reference=new WeakReference<>(context);
         cerId=cerid;
         return  THttpHolder.T_HTTP;
@@ -67,8 +76,20 @@ public class THttp {
      * 将请求添加到请求队列
      * @param request
      */
-    public static void addRequest(final StringRequest request){
-   request.request();
-}
+    public  THttp addRequest(final Request request){
+               requestSet.add(request);
+        return this;
+    }
+
+    public void start(){
+        if (queue==null)
+            queue=new Queue(requestSet);
+    }
+
+    public void cancleAll(){
+        requestSet.clear();
+        if (queue!=null)
+            queue=null;
+    }
 
 }
