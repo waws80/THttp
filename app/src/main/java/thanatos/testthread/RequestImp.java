@@ -58,11 +58,16 @@ public class RequestImp implements ResultModel {
      * 获取到轮询队列返回到主线程的数据，并通过回调事件进行回调。
      */
     private  static class THttpHandler extends Handler{
+        private String url;
+        public THttpHandler(String url) {
+            this.url=url;
+        }
+
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             UrlOption option= (UrlOption) msg.obj;
-            if (option.mUrl.equals(option.url.getTag())){
+            if (option.mUrl.equals(url)){
                 if (option.result==null){
 
                 }else {
@@ -96,12 +101,11 @@ public class RequestImp implements ResultModel {
                 try {
                     semaphore.acquire();
                     Looper.prepare();
-                    mHandler=new THttpHandler();
+                    mHandler=new THttpHandler(url);
                     String result = mHttpConn.getResult(method, url,jsonObject,map,ids);
                     UrlOption option=new UrlOption();
                     option.mUrl=url;
                     option.result=result;
-                    option.url.setTag(url);
                     Message message=Message.obtain();
                     message.obj=option;
                     mHandler.sendMessage(message);
